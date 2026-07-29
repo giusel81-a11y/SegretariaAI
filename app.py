@@ -7,13 +7,7 @@ from telegram.ext import (
 
 from config import BOT_TOKEN
 
-from memory import (
-    add_note,
-    get_notes,
-    complete_note,
-    delete_note,
-    get_active_notes
-)
+from memory import (2    add_note,3    get_notes,4    complete_note,5    delete_note,6    get_active_notes,7    reset_notes8)
 
 import asyncio
 
