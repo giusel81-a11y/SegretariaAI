@@ -11,15 +11,6 @@ def add_note(text):
     conn.commit()
 
 
-def get_notes():
-
-    rows = conn.execute(
-        "SELECT text FROM notes"
-    )
-
-    return [r[0] for r in rows]
-
-
 def complete_note(note_id):
 
     conn.execute(
