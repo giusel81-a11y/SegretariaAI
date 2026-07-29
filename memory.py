@@ -1,19 +1,27 @@
-from database import conn
-
-def add_note(text):
+def complete_note(note_id):
 
     conn.execute(
-        "INSERT INTO notes(text) VALUES(?)",
-        (text,)
+        "UPDATE notes SET completed = 1 WHERE id = ?",
+        (note_id,)
     )
 
     conn.commit()
 
 
-def get_notes():
+def delete_note(note_id):
 
-    rows = conn.execute(
-        "SELECT text FROM notes"
+    conn.execute(
+        "DELETE FROM notes WHERE id = ?",
+        (note_id,)
     )
 
-    return [r[0] for r in rows]
+    conn.commit()
+
+
+def get_active_notes():
+
+    rows = conn.execute(
+        "SELECT id, text FROM notes WHERE completed = 0"
+    )
+
+    return rows.fetchall()
