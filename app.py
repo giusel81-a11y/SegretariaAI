@@ -6,7 +6,14 @@ from telegram.ext import (
 )
 
 from config import BOT_TOKEN
-from memory import add_note, get_notes
+
+from memory import (
+    add_note,
+    get_notes,
+    complete_note,
+    delete_note,
+    get_active_notes
+)
 
 import asyncio
 
@@ -18,11 +25,14 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "Comandi disponibili:\n"
         "/add attività\n"
         "/list\n"
-        "/today"
+        "/today\n"
+        "/done ID\n"
+        "/delete ID"
     )
 
 
 async def add(update: Update, context: ContextTypes.DEFAULT_TYPE):
+
     text = " ".join(context.args)
 
     if not text:
@@ -39,24 +49,26 @@ async def add(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def list_notes(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    notes = get_notes()
+
+    notes = get_active_notes()
 
     if not notes:
         await update.message.reply_text(
-            "Nessuna attività salvata."
+            "Nessuna attività aperta."
         )
         return
 
-    message = "📋 Attività:\n\n"
+    message = "📋 Attività aperte:\n\n"
 
-    for i, note in enumerate(notes, start=1):
-        message += f"{i}. {note}\n"
+    for note_id, text in notes:
+        message += f"{note_id}. {text}\n"
 
     await update.message.reply_text(message)
 
 
 async def today(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    notes = get_notes()
+
+    notes = get_active_notes()
 
     if not notes:
         await update.message.reply_text(
@@ -66,10 +78,56 @@ async def today(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     message = "🎯 Priorità di oggi:\n\n"
 
-    for note in notes:
-        message += f"• {note}\n"
+    for note_id, text in notes:
+        message += f"• {text}\n"
 
     await update.message.reply_text(message)
+
+
+async def done(update: Update, context: ContextTypes.DEFAULT_TYPE):
+
+    if not context.args:
+        await update.message.reply_text(
+            "Uso: /done ID"
+        )
+        return
+
+    try:
+        note_id = int(context.args[0])
+
+        complete_note(note_id)
+
+        await update.message.reply_text(
+            f"✅ Attività {note_id} completata"
+        )
+
+    except Exception as e:
+        await update.message.reply_text(
+            f"Errore: {str(e)}"
+        )
+
+
+async def delete(update: Update, context: ContextTypes.DEFAULT_TYPE):
+
+    if not context.args:
+        await update.message.reply_text(
+            "Uso: /delete ID"
+        )
+        return
+
+    try:
+        note_id = int(context.args[0])
+
+        delete_note(note_id)
+
+        await update.message.reply_text(
+            f"🗑️ Attività {note_id} eliminata"
+        )
+
+    except Exception as e:
+        await update.message.reply_text(
+            f"Errore: {str(e)}"
+        )
 
 
 async def main():
@@ -80,6 +138,8 @@ async def main():
     app.add_handler(CommandHandler("add", add))
     app.add_handler(CommandHandler("list", list_notes))
     app.add_handler(CommandHandler("today", today))
+    app.add_handler(CommandHandler("done", done))
+    app.add_handler(CommandHandler("delete", delete))
 
     print("Bot avviato...")
 
