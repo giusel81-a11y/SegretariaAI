@@ -93,5 +93,62 @@ async def done(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
         return
 
-    try:
- 
+    note_id = int(context.args[0])
+
+    complete_note(note_id)
+
+    await update.message.reply_text(
+        f"✅ Attività {note_id} completata"
+    )
+
+
+async def delete(update: Update, context: ContextTypes.DEFAULT_TYPE):
+
+    if not context.args:
+        await update.message.reply_text(
+            "Uso: /delete ID"
+        )
+        return
+
+    note_id = int(context.args[0])
+
+    delete_note(note_id)
+
+    await update.message.reply_text(
+        f"🗑️ Attività {note_id} eliminata"
+    )
+
+
+async def reset(update: Update, context: ContextTypes.DEFAULT_TYPE):
+
+    reset_notes()
+
+    await update.message.reply_text(
+        "✅ Database azzerato"
+    )
+
+
+async def main():
+
+    app = ApplicationBuilder().token(BOT_TOKEN).build()
+
+    app.add_handler(CommandHandler("start", start))
+    app.add_handler(CommandHandler("add", add))
+    app.add_handler(CommandHandler("list", list_notes))
+    app.add_handler(CommandHandler("today", today))
+    app.add_handler(CommandHandler("done", done))
+    app.add_handler(CommandHandler("delete", delete))
+    app.add_handler(CommandHandler("reset", reset))
+
+    print("Bot avviato...")
+
+    await app.initialize()
+    await app.start()
+    await app.updater.start_polling()
+
+    while True:
+        await asyncio.sleep(3600)
+
+
+if __name__ == "__main__":
+    asyncio.run(main())
