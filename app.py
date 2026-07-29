@@ -7,7 +7,13 @@ from telegram.ext import (
 
 from config import BOT_TOKEN
 
-from memory import (2    add_note,3    get_notes,4    complete_note,5    delete_note,6    get_active_notes,7    reset_notes8)
+from memory import (
+    add_note,
+    complete_note,
+    delete_note,
+    get_active_notes,
+    reset_notes
+)
 
 import asyncio
 
@@ -21,7 +27,8 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "/list\n"
         "/today\n"
         "/done ID\n"
-        "/delete ID"
+        "/delete ID\n"
+        "/reset"
     )
 
 
@@ -87,6 +94,4 @@ async def done(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
 
     try:
-        note_id = int(context.args[0])
-
-   
+ 
