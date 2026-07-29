@@ -47,3 +47,14 @@ def get_active_notes():
     )
 
     return rows.fetchall()
+
+
+def reset_notes():
+
+    conn.execute("DELETE FROM notes")
+
+    conn.execute(
+        "DELETE FROM sqlite_sequence WHERE name='notes'"
+    )
+
+    conn.commit()
